@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <!--    DI 依赖注入 -->
+    <!-- 使用@Autowired注解实现根据类型实现自动装配
+         @Autowired:Spring会自动的为这个属性赋值；
+         一定是去容器中找到这个属性对应的组件（所以要么通过scan扫描包导入容器，要么通过bean标签注入，容器中一定要先有才可以）
+
+       -->
+
+    <!--
+        @Autowired原理：
+            @Autowired
+            private BookService bookService;
+            1.先按照类型去容器中找到对应的组件，bookService = ioc.getBean(BookService.class);
+                1> 找到一个 直接赋值
+                2> 没找到，抛异常
+                3> 找到多个，会装配上
+                    1) 按照变量名作为id继续匹配（private BookService bookService;）
+                                            比如一个BookService一个BookServiceExt
+                        1} 匹配上：装配
+                        2} 没有匹配：报错 （private BookService bookService222;）
+                                        比如一个BookService一个BookServiceExt
+                            原因：因为我们按照变量名作id继续匹配的，当我们的变量名默认id和我们的目标bean的id不匹配时，会报错
+                            解决：@Qualifier("bookServiceExt") 指定目标bean的新id
+
+            所以我们发现@Autowired标注的自动装配的属性默认是一定装配上的
+            如果实在找不到不想弄了，则@Autowired(required = false) 找不到就装配上null
+
+    -->
+
+    <context:component-scan base-package="com.jiang"></context:component-scan>
+
+
+</beans>

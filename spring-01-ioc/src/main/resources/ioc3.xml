@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- 1.通过继承实现bean配置的复用 -->
+    <!-- 2.让person01只允许继承 不能获取实例 abstract=true-->
+    <bean id="person01" class="com.jiang.Person" abstract="true">
+        <property name="lastName" value="马云"></property>
+        <property name="age" value="50"></property>
+        <property name="email" value="123456@alibaba.com"></property>
+        <property name="gender" value="男"></property>
+    </bean>
+    <!--此时我想创建一个person02 他们的属性值是一个样的 不通过复制的办法做到-->
+
+    <!--parent:指定当前bean的配置信息继承于那个-->
+    <bean id="person02" class="com.jiang.Person" parent="person01"></bean>
+
+
+
+    <!-- 3.bean的作用域:
+        prototype:多实例
+                1>容器启动 默认不会创建多实例bean
+                2>获取的时候 创建这个bean
+                3>每次获取都会创建一个新的实例
+        singleton:单实例，默认的
+               1>在容器启动完成之前 就已经创建好对象，保存在容器中了
+               2>任何时候获取 都是获取之前创建好的对象
+        request:在web环境下,同一次请求创建一个bean实例（没用）
+        session:在web环境下,同一次会话创建一个bean实例（没用）
+      -->
+    <bean id="book" class="com.jiang.Book" scope="singleton"></bean>
+
+
+    <!-- 4.工厂方法  -->
+    <!-- 静态工厂(不需要创建工厂本身)   -->
+    <bean id="airPlan01" class="com.jiang.factory.AirPlanStaticFactory" factory-method="getAirPlan">
+        <!--factory-method：指定那个是工厂方法-->
+        <!--通过constructor-arg传参 因为只有一个jzName需要传入 可以省略name直接写value-->
+        <constructor-arg name="jzName" value="机长01"></constructor-arg>
+    </bean>
+
+    <!-- 实例工厂   -->
+    <!-- a.首先创建我们的实例工厂(我们实例工厂是先new AirPlanInstanceFactory.getAirPlan() ) -->
+    <bean name="airPlanInstanceFactory" class="com.jiang.factory.AirPlanInstanceFactory"></bean>
+    <!-- b.然后配置我们的对象(AirPlan)使用那个工厂创建
+        factory-bean="airPlanInstanceFactory":指定使用那个实例工厂
+        factory-method="getAirPlan":使用那个工厂方法
+     -->
+    <bean name="airPlan02" class="com.jiang.AirPlan"
+          factory-bean="airPlanInstanceFactory" factory-method="getAirPlan">
+        <!--通过constructor-arg传参 因为只有一个jzName需要传入 也可以省略name直接写value-->
+        <constructor-arg name="jzName" value="机长02"></constructor-arg>
+    </bean>
+
+
+    <!--  FactoryBean(Spring规定的一个接口);
+          只要是这个接口的实现类,Spring都认为是一个工厂   -->
+    <bean name="myFactoryBeanImpl" class="com.jiang.factory.MyFactoryBeanImpl"></bean>
+</beans>

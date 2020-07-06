@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-4.1.xsd">
+
+
+
+    <!-- 为各种属性赋值-->
+    <!-- 1.测试使用null值-->
+    <!--
+
+    -->
+    <bean id="person01" class="com.jiang.Person">
+        <!-- 如果此时什么都不写,即我没有赋入任何值,他们的默认值打印出来则都是null -->
+        <!-- 但是假如我在Person类中声明了一个值 比如person中的lastname="小姜"
+             那么打印出来的话,则是age=null lastname="小姜"....
+             但如果我此时 我希望默认值小姜变成null
+        -->
+
+        <!--<property name="lastName" value="null"></property>-->
+        <property name="lastName">
+            <null/>
+        </property>
+
+    <!--2.ref 引动外面的值
+        我们在这里的ref 就是引用的下面car01的值
+        这个car 虽然是person01中的car,但其实他是引用的ioc容器中的car01
+        所以car == car01
+        当修改car01的值时 car的值也会随着改变
+     -->
+        <!--<property name="car" ref="car01"></property>-->
+
+
+
+        <!--3.引入外部bean
+            直接就是在这个person01下面新new了一个car对象
+              -->
+        <property name="car">
+            <bean id="carbean" class="com.jiang.Car">
+                <property name="price" value="200"></property>
+                <property name="color" value="black"></property>
+                <property name="carName" value="mmm~"></property>
+            </bean>
+        </property>
+
+
+
+    </bean>
+
+    <!--2.ref引用的car-->
+    <!--<bean id="car01" class="com.jiang.Car">-->
+    <!--    <property name="carName" value="milk"></property>-->
+    <!--    <property name="color" value="white"></property>-->
+    <!--    <property name="price" value="2000"></property>-->
+    <!--</bean>-->
+
+    <bean id="book" class="com.jiang.Book">
+        <property name="bookName" value="高性能Netty"></property>
+        <property name="price" value="55"></property>
+    </bean>
+
+    <bean id="person02" class="com.jiang.Person">
+        <property name="books">
+            <!--books = new ArrayList<Book>()-->
+
+            <list>
+                <!--list标签中添加一个元素-->
+                <bean class="com.jiang.Book">
+                    <property name="price" value="50"></property>
+                    <property name="bookName" value="Spring5核心原理"></property>
+                </bean>
+                <!--ref引用-->
+                <ref bean="book"></ref>
+            </list>
+        </property>
+        <property name="maps">
+            <!--map = new LinkedHashMap()-->
+            <map>
+                <!--一个entry 就代表一个键值对-->
+                <entry key="key01" value="张三"></entry>
+                <entry key="key02" value="18"></entry>
+                <entry key="key03" value-ref="book"></entry>
+                <entry key="key04">
+                    <bean class="com.jiang.Book">
+                        <property name="bookName" value="SpringBoot实战开发"></property>
+                    </bean>
+                </entry>
+                <entry key="key05">
+                    <map></map>
+                </entry>
+            </map>
+       </property>
+
+
+        <property name="properties">
+            <!--props = new Properties() -->
+            <props>
+                <!--所有的key=value 都是String类型 所以值都写在标签体中-->
+                <prop key="username" >root</prop>
+                <prop key="password">123456</prop>
+            </props>
+        </property>
+
+
+        <!--<property name="maps" ref="utilmap"></property>-->
+
+    </bean>
+    <!--
+    PS: 内部写的bean是不需要name的
+        你在beans下,也就是外面的bean是全局的 大家都可以用 你写name可以输出打印
+        但是你在property下的bean是内部的,不可以被随便打印,所以不需要name
+        -->
+
+
+
+
+    <util:map id="utilmap">
+        <!--一个entry 就代表一个键值对-->
+        <entry key="key01" value="王五"></entry>
+        <entry key="key02" value="18"></entry>
+        <entry key="key03" value-ref="book"></entry>
+        <entry key="key04">
+            <bean class="com.jiang.Book">
+                <property name="bookName" value="SpringBoot实战开发"></property>
+            </bean>
+        </entry>
+        <entry key="key05">
+            <map></map>
+        </entry>
+
+    </util:map>
+
+
+    <!--级联属性赋值   级联属性：属性的属性-->
+    <bean id="person03" class="com.jiang.Person">
+        <!-- 为car赋值的时候 我要改变price -->
+        <property name="car" ref="carbean"></property>
+        <!--我们可以通过car.price 进行单独的修改 -->
+        <property name="car.price" value="150"></property>
+        <!--但是此时就出现了问题，我们发现无论是ioc中的car还是person03中的car的price都进行了改变
+            这是因为我们获取car的方式是引用，所以我们进行修改的时候，其实是修改的引用地址的那个price
+            所以级联属性可以对属性的属性进行修改，但可能会改变原来的值
+            -->
+    </bean>
+</beans>

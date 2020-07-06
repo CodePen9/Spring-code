@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!--
+        基于xml的自动装配
+        自动装配：为自定义类型自动赋值;
+        (javaBean也就是基本类型不能自动装配)
+    -->
+    <bean id="car" class="com.jiang.bean.Car">
+        <property name="price" value="2000"></property>
+        <property name="carName" value="mike"></property>
+        <property name="color" value="black"></property>
+    </bean>
+
+
+    <!--
+        自动装配
+        在bean标签里 通过autowire="default/no"(默认,不进行自动装配)进行自动装配;
+
+        按照某种规则自动装配：
+        autowire="byName":按照名字
+            在我们Person类中有private Car car;
+            当开启自动装配byname的时候,Spring会以属性名(car)作为id去容器中找这个组件,给他赋值
+
+        autowire="byType":
+        autowire="constructor":
+     -->
+    <bean id="person" class="com.jiang.bean.Person" autowire="byName">
+        <!--
+            为Person里的自定义类型赋值
+            property：手动赋值
+         -->
+        <!--<property name="car" ref="car"></property>-->
+    </bean>
+
+</beans>
